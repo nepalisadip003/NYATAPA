@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex"><title>Nyatapa Members</title>
+<style>
+:root{--bg:#000;--s:#141210;--line:#2e2a22;--t:#fbf7ec;--m:#a39c8a;--y:#ffcc00;color-scheme:dark;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px/1.5 system-ui,sans-serif}
+.w{max-width:900px;margin:0 auto;padding:16px}h1{color:var(--y);margin:0 0 12px}
+input,select,textarea,button{font:inherit;border-radius:12px;border:1.5px solid var(--line);background:var(--s);color:var(--t);padding:10px 14px;min-height:44px}
+button{border-color:var(--y);color:var(--y);background:none;cursor:pointer;font-weight:600}button.p{background:var(--y);color:#000}
+.r{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.r>input,.r>textarea{flex:1;min-width:160px}
+.st{color:var(--m)}.er{color:#ff7a6b}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}th{color:var(--m);font-weight:500;font-size:13px}
+.tg{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;border:1px solid var(--y);color:var(--y)}.tg.g{background:var(--y);color:#000}
+td a{color:var(--y);margin-right:12px}
+</style></head><body><div class="w"><h1>Nyatapa Members</h1>
+<div id="lg"><div class="r"><input id="pin" type="password" placeholder="Admin PIN"><button class="p" id="go">Open</button></div><p class="er" id="er"></p></div>
+<div id="app" style="display:none">
+<p class="st" id="sum"></p>
+<div class="r"><textarea id="off" rows="2" maxlength="200" placeholder="Current offer for members, e.g. Show this message and get free fries with any burger"></textarea><button class="p" id="so">Save offer</button></div>
+<div class="r"><input id="q" placeholder="Search name or phone"><select id="s"><option value="v">Most visits</option><option value="p">Biggest spend</option><option value="l">Recently visited</option><option value="j">Newest</option></select><button id="csv">Export CSV</button></div>
+<div class="tw"><table><thead><tr><th>Member</th><th>Phone</th><th>Visits</th><th>Spend</th><th>Last visit</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+</div></div>
+<script>
+var A="",M=[],$=function(i){return document.getElementById(i)};
+function api(o){return fetch("/api/club",{method:"POST",body:JSON.stringify(o)}).then(function(r){return r.json().then(function(j){if(!r.ok)throw j.error||"Error";return j})})}
+function tier(v){return v>=10?"Gold":v>=3?"Regular":"Member"}
+function d(t){return t?new Date(t).toLocaleDateString():"—"}
+function el(t,x,c){var e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;return e}
+$("go").onclick=function(){A=$("pin").value;
+api({action:"admin",admin:A,op:"list"}).then(function(r){M=r.members;$("lg").style.display="none";$("app").style.display="block";draw();return api({action:"offer"})}).then(function(r){$("off").value=r.offer.text||""}).catch(function(e){$("er").textContent=typeof e=="string"?e:"Couldn't connect"})};
+$("so").onclick=function(){api({action:"admin",admin:A,op:"setoffer",text:$("off").value}).then(function(){$("so").textContent="Saved ✓";setTimeout(function(){$("so").textContent="Save offer"},2000)}).catch(function(e){alert(e)})};
+function draw(){var q=$("q").value.toLowerCase(),s=$("s").value,k={v:"visits",p:"spend",l:"last",j:"joined"}[s];
+var L=M.filter(function(m){return!q||m.name.toLowerCase().indexOf(q)>-1||m.phone.indexOf(q)>-1}).sort(function(a,b){return b[k]-a[k]});
+var reg=M.filter(function(m){return m.visits>=3}).length;
+$("sum").textContent=M.length+" members · "+reg+" regulars (3+ visits)";
+var tb=$("tb");tb.textContent="";
+L.forEach(function(m){var tr=el("tr"),t=tier(m.visits),c=el("td");c.appendChild(el("b",m.name));c.appendChild(document.createTextNode(" "));c.appendChild(el("span",t,"tg"+(t=="Gold"?" g":"")));tr.appendChild(c);
+tr.appendChild(el("td",m.phone));tr.appendChild(el("td",m.visits));tr.appendChild(el("td","Rs. "+m.spend));tr.appendChild(el("td",d(m.last)));
+var a=el("td"),w=el("a","WhatsApp");w.target="_blank";w.rel="noopener";w.href="https://wa.me/977"+m.phone+"?text="+encodeURIComponent("Hi "+m.name+"! "+($("off").value||"We have a special offer for you at Nyatapa.")+" — Nyatapa, Byasi");a.appendChild(w);
+var x=el("a","Delete");x.href="#";x.onclick=function(e){e.preventDefault();if(confirm("Delete "+m.name+"?"))api({action:"admin",admin:A,op:"delete",phone:m.phone}).then(function(){M=M.filter(function(z){return z.phone!=m.phone});draw()})};a.appendChild(x);tr.appendChild(a);tb.appendChild(tr)})}
+$("q").oninput=draw;$("s").onchange=draw;
+$("csv").onclick=function(){function f(v){v=String(v);if(/^[=+\-@]/.test(v))v="'"+v;return'"'+v.replace(/"/g,'""')+'"'}
+var rows=[["Name","Phone","Visits","Spend","Points","Last visit","Joined"]].concat(M.map(function(m){return[m.name,m.phone,m.visits,m.spend,m.points,d(m.last),d(m.joined)]}));
+var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([rows.map(function(r){return r.map(f).join(",")}).join("\n")],{type:"text/csv"}));a.download="nyatapa-members.csv";a.click()};
+</script></body></html>

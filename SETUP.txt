@@ -1,0 +1,37 @@
+NYATAPA - SETUP (no secrets are stored in these files)
+
+FILES
+  index.html            customer menu + ordering + Nyatapa Club
+  staff.html            kitchen / waiter board        (yoursite/staff.html)
+  admin.html            members list and offers       (yoursite/admin.html)
+  logo.png              logo
+  netlify/functions/    order.mjs (orders, waiter calls, location check)
+                        club.mjs  (membership)
+
+1) UPLOAD
+   Easiest and most reliable: put this whole folder on GitHub, then in Netlify:
+   Add new site > Import an existing project > pick the repo > Deploy.
+   (Or run:  npx netlify-cli deploy --prod   inside this folder.)
+   If you use drag-and-drop and the ordering/membership does not work,
+   use GitHub or the CLI instead, because drag-and-drop may skip functions.
+
+2) SET THESE IN NETLIFY  (Site settings > Environment variables)
+   ADMIN_PIN     your staff / admin PIN
+   NTFY_SECRET   a long random text, e.g. nyatapa-k7x2q9m4w8z3  (never share it)
+   PIN_SALT      any long random text (keeps member PINs private)
+   Optional: RADIUS_M (default 120), SHOP_LAT, SHOP_LNG
+   Then redeploy (Deploys > Trigger deploy).
+
+3) TABLE QR CODES  (make one QR per link, put it on the table)
+   https://YOURSITE.netlify.app/?t=T1  ... up to  ?t=T16
+   https://YOURSITE.netlify.app/?t=C1   ?t=C2   ?t=C3
+   https://YOURSITE.netlify.app/?t=G1
+
+4) STAFF
+   Open YOURSITE/staff.html, enter ADMIN_PIN, tap "Start shift".
+   For alarms when the phone is locked: install the free ntfy app and
+   subscribe to the two channels shown at the bottom of the staff page.
+
+5) TEST BEFORE OPENING
+   Order and call a waiter from a phone inside the restaurant, then try from
+   outside (it should refuse). Join the club and check /admin.html.
