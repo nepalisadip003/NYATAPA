@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex"><title>Nyatapa Board</title>
+<style>
+:root{--bg:#000;--s:#141210;--s2:#1c1915;--line:#2e2a22;--t:#fbf7ec;--m:#a39c8a;--y:#ffcc00;--r:#ff4d4f;--g:#4cc36b;color-scheme:dark;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font:16px/1.45 system-ui,sans-serif}
+button{font:600 16px system-ui;border-radius:12px;border:1.5px solid var(--y);background:none;color:var(--y);min-height:48px;padding:0 18px;cursor:pointer}
+button.p{background:var(--y);color:#000}
+.hd{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px}
+.hr{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+h1{margin:0;color:var(--y);font-size:22px}.st{color:var(--m);font-size:13px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--r);margin-right:6px}.dot.on{background:var(--g)}
+.stats{display:flex;gap:14px;color:var(--m);font-size:13px;margin-top:6px;flex-wrap:wrap}.stats b{color:var(--t)}
+#cl{display:none;background:#2a0b0c;border-bottom:2px solid var(--r)}
+#cl.on{display:block;animation:fl 1s infinite alternate}
+@keyframes fl{to{background:#3d1012}}
+@media (prefers-reduced-motion:reduce){#cl.on{animation:none}}
+#cl h2{margin:0;padding:10px 14px 0;font-size:15px;color:var(--r);letter-spacing:.06em}
+.c1{display:flex;align-items:center;gap:12px;padding:10px 14px}
+.c1 b{font-size:26px;flex:1}.c1 .tm{font:700 20px ui-monospace,monospace}
+.tabs{display:flex;gap:8px;padding:10px 14px}.tabs button{flex:1}.tabs button[aria-pressed=true]{background:var(--y);color:#000}
+.w{max-width:1200px;margin:0 auto;padding:0 14px 60px;display:grid;gap:16px}
+.pane{display:none}.pane.on{display:block}
+@media (min-width:900px){.w{grid-template-columns:340px 1fr}.pane{display:block}.tabs{display:none}}
+.grp{color:var(--m);font-size:13px;letter-spacing:.08em;margin:16px 0 8px}
+.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tl{border:1.5px solid var(--line);background:var(--s);border-radius:14px;padding:10px 4px;text-align:center;cursor:pointer;color:var(--t);min-height:70px}
+.tl b{display:block;font-size:20px}.tl small{font-size:12px;color:var(--m)}
+.tl.a{border-color:var(--y);background:#2a2200}.tl.a small{color:var(--y)}
+.tl.rd{border-color:var(--g);background:#0d2a15}.tl.rd small{color:var(--g)}
+.tl.cl{border-color:var(--r);background:#3d1012;animation:fl 1s infinite alternate}.tl.cl small{color:#ff8a8c}
+.tl.f{outline:3px solid var(--t)}
+.sec{margin:18px 0 8px;font-size:15px;letter-spacing:.06em;display:flex;gap:8px;align-items:center}
+.sec i{font-style:normal;background:var(--line);border-radius:99px;padding:0 10px;font-size:13px}
+.n{color:var(--y)}.pp{color:#ff9f43}.rr{color:var(--g)}
+.tk{background:var(--s);border:1.5px solid var(--line);border-left:6px solid var(--y);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.tk.p2{border-left-color:#ff9f43}.tk.r2{border-left-color:var(--g)}
+.th{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.th b{font-size:26px}
+.tm{font:700 18px ui-monospace,monospace}.tm.ok{color:var(--g)}.tm.mid{color:var(--y)}.tm.bad{color:var(--r)}
+.it{font-size:19px;padding:3px 0;border-bottom:1px dotted var(--line)}.it b{color:var(--y);margin-right:6px}
+.nt{margin:8px 0;padding:8px 10px;background:#2a2200;border:1px solid var(--y);border-radius:10px;font-weight:600}
+.mb{display:inline-block;font-size:12px;border:1px solid var(--y);color:var(--y);border-radius:99px;padding:1px 10px;margin-top:6px}
+.tf{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px}.tf span{color:var(--m)}
+.tf button{flex:1;max-width:220px}
+.e{color:var(--m);padding:8px 0}
+#lg{max-width:360px;margin:60px auto;padding:0 20px;text-align:center}
+#lg input{width:100%;height:50px;border-radius:12px;border:1.5px solid var(--line);background:var(--s);color:var(--t);padding:0 14px;font:inherit;margin:10px 0}
+.fb{display:none;margin:8px 0}.fb.on{display:flex;gap:10px;align-items:center}
+</style></head><body>
+<div id="lg"><h1>Nyatapa Board</h1><p class="st">Enter the staff PIN.</p><input id="sp" type="password" placeholder="Staff PIN"><button class="p" id="si" style="width:100%">Open</button><p id="se" style="color:var(--r)"></p></div>
+<div id="app" style="display:none">
+<div class="hd"><div class="hr"><h1>Nyatapa Board</h1><span class="st"><span class="dot" id="d"></span><span id="s1">Connecting…</span></span><button class="p" id="go">🔊 Start shift</button></div>
+<div class="stats"><span>Waiting: <b id="x1">0</b></span><span>Cooking: <b id="x2">0</b></span><span>Ready: <b id="x3">0</b></span><span id="x4"></span></div></div>
+<div id="cl"></div>
+<div class="tabs"><button id="b1" aria-pressed="true">Kitchen</button><button id="b2" aria-pressed="false">Tables</button></div>
+<div class="w"><div class="pane" id="p2"></div><div class="pane on" id="p1"></div></div>
+<p class="st" id="tp" style="padding:0 14px 30px"></p>
+</div>
+<script>
+var NT="",B="https://ntfy.sh/",$=function(i){return document.getElementById(i)};
+var I={},S={},T0=Date.now()/1000,ctx=null,TF="",R={"new":0,prep:1,ready:2,served:3,done:3};
+var UP=[],i;for(i=1;i<=16;i++)UP.push("T"+i);
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+function lab(t){return t[0]=="T"?"Table "+t.slice(1):t[0]=="C"?"Cabin "+t.slice(1):"Ground floor G1"}
+function beep(f,d,w){if(!ctx)return;var o=ctx.createOscillator(),g=ctx.createGain();o.type="square";o.frequency.value=f;g.gain.value=.2;o.connect(g);g.connect(ctx.destination);var t=ctx.currentTime+(w||0);o.start(t);o.stop(t+d)}
+function vib(p){if(navigator.vibrate)navigator.vibrate(p)}
+$("go").onclick=function(){ctx=new(window.AudioContext||window.webkitAudioContext)();ctx.resume();beep(880,.2);vib(200);
+function lock(){if(navigator.wakeLock)navigator.wakeLock.request("screen").catch(function(){})}
+lock();document.addEventListener("visibilitychange",function(){if(!document.hidden)lock()});this.textContent="🔊 Sound on";this.disabled=true};
+function all(){return Object.keys(I).map(function(k){return I[k]})}
+function calls(){return all().filter(function(x){return x.k=="kcal"&&R[x.st]<3}).sort(function(a,b){return a.time-b.time})}
+function ords(st){return all().filter(function(x){return x.k=="kord"&&x.st==st}).sort(function(a,b){return a.time-b.time})}
+function setSt(id,st){var c=S[id]||"new";if(R[st]>=R[c])S[id]=st;if(I[id])I[id].st=S[id]}
+function mm(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+("0"+s%60).slice(-2)}
+function tmE(x,w){return'<span class="tm" data-t="'+x.time+'" data-w="'+w+'"></span>'}
+function ticket(x){var L=x.msg.split("\n"),items="",note="",mem="";
+L.forEach(function(l){if(l.indexOf("Note: ")==0)note=l.slice(6);else if(l.indexOf("Member: ")==0)mem=l.slice(8);else if(l.trim()){var q=l.match(/^(\d+)× (.*)$/);items+=q?'<div class="it"><b>'+q[1]+'×</b>'+esc(q[2])+'</div>':'<div class="it">'+esc(l)+'</div>'}});
+var tot=(x.title.match(/Rs\. (\d+)/)||[])[1]||"",cls={"new":"",prep:" p2",ready:" r2"}[x.st],bt={"new":"Start cooking",prep:"Mark ready",ready:"Served ✓"}[x.st];
+return'<div class="tk'+cls+'"><div class="th"><b>'+esc(lab(x.t))+'</b>'+tmE(x,"o")+'</div>'+items+(note?'<div class="nt">📝 '+esc(note)+'</div>':"")+(mem?'<span class="mb">⭐ '+esc(mem)+'</span>':"")+'<div class="tf"><span>'+(tot?"Rs. "+tot:"")+'</span><button class="p" data-a="adv" data-id="'+x.id+'">'+bt+'</button></div></div>'}
+function sec(t,c,list,k){return'<div class="sec '+c+'">'+t+'<i>'+list.length+'</i></div>'+(list.length?list.map(ticket).join(""):'<p class="e">'+k+'</p>')}
+function render(){var C=calls(),N=ords("new"),P=ords("prep"),Rd=ords("ready"),f=function(a){return TF?a.filter(function(x){return x.t==TF}):a};
+$("cl").className=C.length?"on":"";$("cl").innerHTML=C.length?'<h2>🔔 WAITER NEEDED</h2>'+C.map(function(x){return'<div class="c1"><b>'+esc(lab(x.t))+'</b>'+tmE(x,"c")+'<button class="p" data-a="call" data-id="'+x.id+'">On my way ✓</button></div>'}).join(""):"";
+$("x1").textContent=N.length;$("x2").textContent=P.length;$("x3").textContent=Rd.length;
+var tot=0,cnt=0;all().forEach(function(x){if(x.k=="kord"){cnt++;tot+=+((x.title.match(/Rs\. (\d+)/)||[])[1]||0)}});$("x4").textContent=cnt?"Last 12 h: "+cnt+" orders · Rs. "+tot:"";
+document.title=(C.length?"("+C.length+") 🔔 ":"")+"Nyatapa Board";
+$("b1").textContent="Kitchen ("+(N.length+P.length+Rd.length)+")";
+$("p1").innerHTML=(TF?'<div class="fb on"><span>Showing '+esc(lab(TF))+'</span><button data-a="clr">Show all</button></div>':"")+sec("🆕 NEW","n",f(N),"No new orders.")+sec("🍳 COOKING","pp",f(P),"Nothing cooking.")+sec("✅ READY TO SERVE","rr",f(Rd),"Nothing waiting to be served.");
+var h="";function grp(n,a){h+='<div class="grp">'+n+'</div><div class="tg">'+a.map(function(t){var c=C.some(function(x){return x.t==t}),r=Rd.filter(function(x){return x.t==t}).length,a2=N.concat(P).filter(function(x){return x.t==t}).length,cl=c?"cl":r?"rd":a2?"a":"",s=c?"🔔 Waiter":r?"✅ Ready":a2?"🍳 "+a2+" order"+(a2>1?"s":""):"Free";
+return'<button class="tl '+cl+(TF==t?" f":"")+'" data-a="tbl" data-t="'+t+'"><b>'+t+'</b><small>'+s+'</small></button>'}).join("")+'</div>'}
+grp("UPSTAIRS",UP);grp("CABINS",["C1","C2","C3"]);grp("GROUND FLOOR",["G1"]);$("p2").innerHTML=h;tick()}
+function tick(){var n=Date.now()/1000;document.querySelectorAll(".tm").forEach(function(e){var s=n-e.dataset.t,c=e.dataset.w=="c"?[60,120]:[300,600];e.textContent=mm(s);e.className="tm "+(s>c[1]?"bad":s>c[0]?"mid":"ok")})}
+setInterval(tick,1000);setInterval(render,15000);
+setInterval(function(){if(calls().length){beep(880,.25);beep(1175,.25,.3);vib([400,150,400])}},2500);
+function post(x,st){fetch(B,{method:"POST",body:JSON.stringify({topic:NT+"-"+(x.k=="kcal"?"waiter":"orders"),title:"status",message:st+": "+x.title,tags:["kst",x.t,x.id,st],priority:1})}).catch(function(){})}
+function tab(n){$("p1").classList.toggle("on",n==1);$("p2").classList.toggle("on",n==2);$("b1").setAttribute("aria-pressed",n==1);$("b2").setAttribute("aria-pressed",n==2)}
+$("b1").onclick=function(){tab(1)};$("b2").onclick=function(){tab(2)};
+document.addEventListener("click",function(e){var b=e.target.closest("[data-a]");if(!b)return;var a=b.dataset.a,x=I[b.dataset.id];
+if(a=="adv"&&x){var nx={"new":"prep",prep:"ready",ready:"served"}[x.st];post(x,nx);setSt(x.id,nx)}
+else if(a=="call"&&x){post(x,"done");setSt(x.id,"done")}
+else if(a=="tbl"){TF=TF==b.dataset.t?"":b.dataset.t;if(TF)tab(1)}
+else if(a=="clr")TF="";render()});
+function conn(){var es=new EventSource(B+NT+"-orders,"+NT+"-waiter/sse?since=12h");
+es.onopen=function(){$("d").className="dot on";$("s1").textContent="Live"};
+es.onerror=function(){$("d").className="dot";$("s1").textContent="Reconnecting…"};
+es.onmessage=function(e){var m;try{m=JSON.parse(e.data)}catch(x){return}if(m.event!="message")return;
+var g=m.tags||[],k=g[0],id=g[2];if(!id)return;
+if(k=="kst")setSt(id,g[3]);else if(k=="kdon")setSt(id,"done");
+else if((k=="kord"||k=="kcal")&&!I[id]){I[id]={k:k,t:g[1],id:id,time:m.time,title:m.title||"",msg:m.message||"",st:S[id]||"new"};
+if(m.time>=T0-5&&k=="kord"){beep(660,.2);beep(880,.2,.25);vib([200,100,200])}}
+render()}}
+function unlock(pin){return fetch("/api/order",{method:"POST",body:JSON.stringify({kind:"staffkey",pin:pin})}).then(function(r){return r.json().then(function(j){if(!r.ok)throw j.error||"Error";return j})}).then(function(j){if(!j.key)throw "Server not set up yet";NT=j.key;try{localStorage.setItem("nys",pin)}catch(e){}
+$("lg").style.display="none";$("app").style.display="block";$("tp").textContent="Phone alarm app (ntfy) channels: "+NT+"-waiter and "+NT+"-orders";conn();render()})}
+$("si").onclick=function(){$("se").textContent="";unlock($("sp").value).catch(function(e){$("se").textContent=typeof e=="string"?e:"Couldn't connect"})};
+var sv="";try{sv=localStorage.getItem("nys")||""}catch(e){}
+if(sv)unlock(sv).catch(function(){$("lg").style.display="block"});
+</script></body></html>
